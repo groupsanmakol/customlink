@@ -2,51 +2,225 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Shopee Tool PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo Link Shopee</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f4f9;
+    text-align:center;
+    padding:50px 20px;
+}
+
+.container{
+    max-width:500px;
+    background:#fff;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+    margin:0 auto;
+}
+
+h1{
+    color:#ee4d2d;
+    font-size:24px;
+    margin-bottom:20px;
+}
+
+input[type=text]{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#ee4d2d;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:16px;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#d33b1c;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.result-box{
+    margin-top:20px;
+    display:none;
+    background:#f9f9f9;
+    padding:15px;
+    border-radius:5px;
+    border:1px dashed #ee4d2d;
+}
+
+.btn-copy{
+    background:#0084ff;
+}
+
+.btn-copy:hover{
+    background:#0066cc;
+}
+
+.status-text{
+    font-weight:bold;
+    color:#333;
+    margin-bottom:12px;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Shopee Affiliate Tool</h2>
+<div class="container">
 
-<input id="link" placeholder="Nhập link Shopee">
-<input id="subid" placeholder="Sub ID (tuỳ chọn)">
+<h1>Tạo Link Shopee</h1>
 
-<button onclick="run()">Tạo link</button>
+<div style="margin-bottom:24px;line-height:1.6;">
+    <div style="font-size:18px;font-weight:700;margin-bottom:12px;">
+        <span>Các khung giờ có thêm lượt dùng mã FB 25%:</span><br>
+        <span style="color:#ee4d2d;">0H, 9H, 15H, 20H</span>
+    </div>
 
-<pre id="out"></pre>
+    <div style="font-size:16px;color:#333;">
+        Dán link sản phẩm Shopee cần mua vào đây
+    </div>
+</div>
+
+<input
+    type="text"
+    id="shopeeLink"
+    placeholder="Nhập link Shopee..."
+>
+
+<button
+    id="generateBtn"
+    onclick="generateAffLink()"
+>
+    Tạo Link Ngay
+</button>
+
+<div
+    class="result-box"
+    id="resultBox"
+>
+    <p
+        class="status-text"
+        id="statusText"
+    >
+        ⏳ Đang xử lý link...
+    </p>
+
+    <input
+        type="hidden"
+        id="outputLink"
+    >
+
+    <button
+        id="copyBtn"
+        class="btn-copy"
+        onclick="copyToClipboard()"
+        disabled
+    >
+        Đang xử lý...
+    </button>
+
+    <a
+        href="https://www.facebook.com/share/p/1HBc1Lj8on/"
+        target="_blank"
+        style="
+            display:block;
+            width:100%;
+            padding:12px;
+            background:#42b72a;
+            color:#fff;
+            text-decoration:none;
+            border-radius:5px;
+            font-weight:bold;
+            margin-top:10px;
+            box-sizing:border-box;
+        "
+    >
+        Dán vào post này để lấy mã 25%
+    </a>
+
+    <div
+        style="
+            margin-top:20px;
+            padding-top:15px;
+            border-top:1px dashed #ccc;
+        "
+    >
+        <div
+            style="
+                font-weight:bold;
+                margin-bottom:10px;
+                color:#555;
+            "
+        >
+            Link dự phòng
+        </div>
+
+        <button
+            onclick="copyBackup1()"
+            style="background:#ff9800;"
+        >
+            Sao chép link lấy mã 22% (1)
+        </button>
+
+        <button
+            onclick="copyBackup2()"
+            style="
+                background:#ff9800;
+                margin-top:8px;
+            "
+        >
+            Sao chép link lấy mã 22% (2)
+        </button>
+    </div>
+</div>
+</div>
 
 <script>
 
-async function run() {
+async function generateAffLink() {
 
-  const url = document.getElementById("link").value;
-  const sub_id = document.getElementById("subid").value;
+  const inputLink = document.getElementById("shopeeLink").value.trim();
 
   const res = await fetch("https://sweet-tooth-735a.onedayofu01.workers.dev/", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ url, sub_id })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: inputLink })
   });
 
   const data = await res.json();
 
-  if (!data.success) {
-    document.getElementById("out").innerText = "Lỗi";
+  if(!data.success){
+    alert("Lỗi");
     return;
   }
 
-  document.getElementById("out").innerText = `
-LINK 25%:
-${data.main.step1}
+  document.getElementById("outputLink").value =
+    data.data.templates.main25;
 
-BACKUP 22%:
-${data.backup.b1}
-${data.backup.b2}
-  `;
+  window.backupTemplate1 = data.data.templates.backup22;
+  window.backupTemplate2 = data.data.templates.backup22;
 }
 
 </script>
-
 </body>
 </html>
