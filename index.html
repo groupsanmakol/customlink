@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Shopee Tool PRO</title>
+</head>
+
+<body>
+
+<h2>Shopee Affiliate Tool</h2>
+
+<input id="link" placeholder="Nhập link Shopee">
+<input id="subid" placeholder="Sub ID (tuỳ chọn)">
+
+<button onclick="run()">Tạo link</button>
+
+<pre id="out"></pre>
+
+<script>
+
+async function run() {
+
+  const url = document.getElementById("link").value;
+  const sub_id = document.getElementById("subid").value;
+
+  const res = await fetch("https://YOUR-WORKER.workers.dev", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ url, sub_id })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    document.getElementById("out").innerText = "Lỗi";
+    return;
+  }
+
+  document.getElementById("out").innerText = `
+LINK 25%:
+${data.main.step1}
+
+BACKUP 22%:
+${data.backup.b1}
+${data.backup.b2}
+  `;
+}
+
+</script>
+
+</body>
+</html>
