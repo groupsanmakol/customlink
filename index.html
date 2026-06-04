@@ -72,10 +72,6 @@ button:disabled{
     background:#0084ff;
 }
 
-.btn-copy:hover{
-    background:#0066cc;
-}
-
 .status-text{
     font-weight:bold;
     color:#333;
@@ -90,137 +86,107 @@ button:disabled{
 
 <h1>Tạo Link Shopee</h1>
 
-<div style="margin-bottom:24px;line-height:1.6;">
-    <div style="font-size:18px;font-weight:700;margin-bottom:12px;">
-        <span>Các khung giờ có thêm lượt dùng mã FB 25%:</span><br>
-        <span style="color:#ee4d2d;">0H, 9H, 15H, 20H</span>
-    </div>
-
-    <div style="font-size:16px;color:#333;">
-        Dán link sản phẩm Shopee cần mua vào đây
-    </div>
+<div style="margin-bottom:20px;">
+    <b>Các khung giờ có thêm mã 25%:</b><br>
+    <span style="color:#ee4d2d;font-weight:bold;">0H - 9H - 15H - 20H</span>
 </div>
 
-<input
-    type="text"
-    id="shopeeLink"
-    placeholder="Nhập link Shopee..."
->
+<input type="text" id="shopeeLink" placeholder="Nhập link Shopee...">
 
-<button
-    id="generateBtn"
-    onclick="generateAffLink()"
->
+<button id="generateBtn" onclick="generateAffLink()">
     Tạo Link Ngay
 </button>
 
-<div
-    class="result-box"
-    id="resultBox"
->
-    <p
-        class="status-text"
-        id="statusText"
-    >
-        ⏳ Đang xử lý link...
-    </p>
+<div class="result-box" id="resultBox">
 
-    <input
-        type="hidden"
-        id="outputLink"
-    >
+    <p class="status-text" id="statusText">⏳ Đang xử lý...</p>
 
-    <button
-        id="copyBtn"
-        class="btn-copy"
-        onclick="copyToClipboard()"
-        disabled
-    >
+    <input type="hidden" id="outputLink">
+
+    <button id="copyBtn" class="btn-copy" onclick="copyToClipboard()" disabled>
         Đang xử lý...
     </button>
 
-    <a
-        href="https://www.facebook.com/share/p/1HBc1Lj8on/"
-        target="_blank"
-        style="
-            display:block;
-            width:100%;
-            padding:12px;
-            background:#42b72a;
-            color:#fff;
-            text-decoration:none;
-            border-radius:5px;
-            font-weight:bold;
-            margin-top:10px;
-            box-sizing:border-box;
-        "
-    >
-        Dán vào post này để lấy mã 25%
-    </a>
-
-    <div
-        style="
-            margin-top:20px;
-            padding-top:15px;
-            border-top:1px dashed #ccc;
-        "
-    >
-        <div
-            style="
-                font-weight:bold;
-                margin-bottom:10px;
-                color:#555;
-            "
-        >
-            Link dự phòng
-        </div>
-
-        <button
-            onclick="copyBackup1()"
-            style="background:#ff9800;"
-        >
-            Sao chép link lấy mã 22% (1)
-        </button>
-
-        <button
-            onclick="copyBackup2()"
-            style="
-                background:#ff9800;
-                margin-top:8px;
-            "
-        >
-            Sao chép link lấy mã 22% (2)
-        </button>
-    </div>
 </div>
+
 </div>
 
 <script>
 
-async function generateAffLink() {
+let isLoading = false;
 
-  const inputLink = document.getElementById("shopeeLink").value.trim();
+async function generateAffLink(){
 
-  const res = await fetch("https://sweet-tooth-735a.onedayofu01.workers.dev/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url: inputLink })
-  });
+    if(isLoading) return;
 
-  const data = await res.json();
+    let inputLink = document.getElementById("shopeeLink").value.trim();
 
-  if(!data.success){
-    alert("Lỗi");
-    return;
-  }
+    if(!inputLink){
+        alert("Vui lòng nhập link Shopee");
+        return;
+    }
 
-  document.getElementById("outputLink").value =
-    data.data.templates.main25;
+    if(!inputLink.startsWith("http")){
+        inputLink = "https://" + inputLink;
+    }
 
-  window.backupTemplate1 = data.data.templates.backup22;
-  window.backupTemplate2 = data.data.templates.backup22;
+    isLoading = true;
+
+    const btn = document.getElementById("generateBtn");
+    const resultBox = document.getElementById("resultBox");
+    const statusText = document.getElementById("statusText");
+    const output = document.getElementById("outputLink");
+    const copyBtn = document.getElementById("copyBtn");
+
+    btn.disabled = true;
+    btn.innerText = "Đang xử lý...";
+    resultBox.style.display = "block";
+    statusText.innerText = "⏳ Đang xử lý link...";
+    copyBtn.disabled = true;
+
+    try{
+
+        const res = await fetch(
+            "https://sweet-tooth-735a.onedayofu01.workers.dev/",
+            {
+                method:"POST",
+                headers:{ "Content-Type":"application/json" },
+                body: JSON.stringify({ url: inputLink })
+            }
+        );
+
+        const data = await res.json();
+
+        if(!data.success) throw new Error(data.error);
+
+        output.value = data.data.templates.main25;
+
+        window.backupTemplate =
+            data.data.templates.backup22;
+
+        statusText.innerText = "✔ Xong rồi";
+        copyBtn.disabled = false;
+        copyBtn.innerText = "Sao chép";
+
+    } catch(err){
+
+        console.log(err);
+        statusText.innerText = "❌ Lỗi xử lý";
+    }
+
+    isLoading = false;
+    btn.disabled = false;
+    btn.innerText = "Tạo Link Ngay";
+}
+
+function copyToClipboard(){
+    navigator.clipboard.writeText(
+        document.getElementById("outputLink").value
+    );
+    alert("Đã copy!");
 }
 
 </script>
+
 </body>
 </html>
