@@ -23,7 +23,7 @@ async function run() {
   const url = document.getElementById("link").value;
   const sub_id = document.getElementById("subid").value;
 
-  const res = await fetch("https://YOUR-WORKER.workers.dev", {
+  const res = await fetch("https://sweet-tooth-735a.onedayofu01.workers.dev/", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ url, sub_id })
