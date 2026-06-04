@@ -113,6 +113,8 @@ button:disabled{
 
 <script>
 
+let isLoading = false;
+
 async function generateAffLink(){
 
     if(isLoading) return;
@@ -138,37 +140,29 @@ async function generateAffLink(){
 
     btn.disabled = true;
     btn.innerText = "Đang xử lý...";
-
     resultBox.style.display = "block";
     statusText.innerText = "⏳ Đang xử lý link...";
     copyBtn.disabled = true;
 
-    try {
+    try{
 
-        const response = await fetch(
-            "https://shopee-resolve.onedayofu01.workers.dev/",
+        const res = await fetch(
+            "https://sweet-tooth-735a.onedayofu01.workers.dev/",
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    url: inputLink,
-                    sub_id: "miki"
-                })
+                method:"POST",
+                headers:{ "Content-Type":"application/json" },
+                body: JSON.stringify({ url: inputLink })
             }
         );
 
-        // ✅ FIX LỖI Ở ĐÂY
-        const data = await response.json();
+        const data = await res.json();
 
-        if(!data.success){
-            throw new Error(data.error);
-        }
+        if(!data.success) throw new Error(data.error);
 
         output.value = data.data.templates.main25;
 
-        window.backupTemplate = data.data.templates.backup22;
+        window.backupTemplate =
+            data.data.templates.backup22;
 
         statusText.innerText = "✔ Xong rồi";
         copyBtn.disabled = false;
@@ -184,6 +178,14 @@ async function generateAffLink(){
     btn.disabled = false;
     btn.innerText = "Tạo Link Ngay";
 }
+
+function copyToClipboard(){
+    navigator.clipboard.writeText(
+        document.getElementById("outputLink").value
+    );
+    alert("Đã copy!");
+}
+
 </script>
 
 </body>
