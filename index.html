@@ -106,7 +106,24 @@ button:disabled{
     <button id="copyBtn" class="btn-copy" onclick="copyToClipboard()" disabled>
         Đang xử lý...
     </button>
-
+<a
+    href="https://www.facebook.com/share/p/1HBc1Lj8on/"
+    target="_blank"
+    style="
+        display:block;
+        width:100%;
+        padding:12px;
+        background:#42b72a;
+        color:#fff;
+        text-decoration:none;
+        border-radius:5px;
+        font-weight:bold;
+        margin-top:10px;
+        box-sizing:border-box;
+    "
+>
+    Dán vào post này để lấy mã FB 25%
+</a>
 </div>
 
 </div>
@@ -166,7 +183,7 @@ async function generateAffLink(){
 
         statusText.innerText = "✔ Xong rồi";
         copyBtn.disabled = false;
-        copyBtn.innerText = "Sao chép";
+        copyBtn.innerText = "Sao chép link lấy mã 25%";
 
     } catch(err){
 
