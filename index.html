@@ -80,6 +80,7 @@ button:disabled{
     font-weight:bold;
     color:#333;
     margin-bottom:12px;
+    white-space:pre-wrap;
 }
 </style>
 </head>
@@ -96,34 +97,19 @@ button:disabled{
     </div>
 </div>
 
-<input
-    type="text"
-    id="shopeeLink"
-    placeholder="Nhập link Shopee..."
->
+<input type="text" id="shopeeLink" placeholder="Nhập link Shopee...">
 
-<button
-    id="generateBtn"
-    onclick="generateAffLink()"
->
+<button id="generateBtn" onclick="generateAffLink()">
     Tạo Link Ngay
 </button>
 
-<div
-    class="result-box"
-    id="resultBox"
->
-    <p
-        class="status-text"
-        id="statusText"
-    >
+<div class="result-box" id="resultBox">
+
+    <p class="status-text" id="statusText">
         ⏳ Đang xử lý link...
     </p>
 
-    <input
-        type="hidden"
-        id="outputLink"
-    >
+    <input type="hidden" id="outputLink">
 
     <button
         id="copyBtn"
@@ -153,16 +139,16 @@ button:disabled{
         Dán vào post này để lấy mã 22%
     </a>
 </div>
+
 </div>
 
 <script>
 
 let isLoading = false;
 
-document
-.getElementById("shopeeLink")
-.addEventListener("keypress",function(e){
-    if(e.key==="Enter"){
+document.getElementById("shopeeLink")
+.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
         generateAffLink();
     }
 });
@@ -171,38 +157,22 @@ async function generateAffLink(){
 
     if(isLoading) return;
 
-    let inputLink =
-        document
-        .getElementById("shopeeLink")
-        .value
-        .trim();
+    let inputLink = document.getElementById("shopeeLink").value.trim();
 
     if(!inputLink){
         alert("Vui lòng nhập link Shopee");
         return;
     }
 
-    if(
-        !inputLink.startsWith("http://") &&
-        !inputLink.startsWith("https://")
-    ){
+    if(!inputLink.startsWith("http")){
         inputLink = "https://" + inputLink;
     }
 
-    const resultBox =
-        document.getElementById("resultBox");
-
-    const outputLink =
-        document.getElementById("outputLink");
-
-    const copyBtn =
-        document.getElementById("copyBtn");
-
-    const statusText =
-        document.getElementById("statusText");
-
-    const generateBtn =
-        document.getElementById("generateBtn");
+    const resultBox = document.getElementById("resultBox");
+    const outputLink = document.getElementById("outputLink");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusText = document.getElementById("statusText");
+    const generateBtn = document.getElementById("generateBtn");
 
     const idBuoc1 = "17398340362";
     const idBuoc2 = "17363570097";
@@ -214,17 +184,12 @@ async function generateAffLink(){
 
     resultBox.style.display = "block";
 
-    statusText.innerText =
-        "⏳ Đang xử lý link...";
+    statusText.innerText = "⏳ Đang xử lý link...";
 
     copyBtn.disabled = true;
-    copyBtn.innerText =
-        "Đang xử lý...";
+    copyBtn.innerText = "Đang xử lý...";
 
     outputLink.value = "";
-
-    window.backupTemplate1 = "";
-    window.backupTemplate2 = "";
 
     try{
 
@@ -232,19 +197,19 @@ async function generateAffLink(){
             "https://shopee-resolve.onedayofu01.workers.dev",
             {
                 method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    url:inputLink
-                })
+                headers:{ "Content-Type":"application/json" },
+                body:JSON.stringify({ url: inputLink })
             }
         );
+
+        if(!response.ok){
+            throw new Error("HTTP error");
+        }
 
         const data = await response.json();
 
         if(!data.success){
-            throw new Error(data.error);
+            throw new Error(data.error || "Error");
         }
 
         const cleanLink = data.final;
@@ -256,51 +221,44 @@ async function generateAffLink(){
             `https://s.shopee.vn/an_redir?origin_link=${encodeURIComponent(cleanLink)}&affiliate_id=${idBuoc2}`;
 
         const finalTemplate =
-`Cách lấy mã 22% FB, đảm bảo làm đủ 2 bước nhé
-Bước 1: Ấn vào link
+`Cách lấy mã 22% FB:
+Bước 1: Ấn link
 ${linkBuoc1}
-Bước 2: Quay lại ấn vào link sau để mua với mã giảm giá
+
+Bước 2: Quay lại ấn link sau để mua
 ${linkBuoc2}`;
 
-    
+        // FIX QUAN TRỌNG
+        outputLink.value = finalTemplate;
 
-        statusText.innerText =
-            "Link đã sẵn sàng để copy";
+        statusText.innerText = finalTemplate;
 
         copyBtn.disabled = false;
-        copyBtn.innerText =
-            "Sao chép link lấy mã 22%";
+        copyBtn.innerText = "Sao chép nội dung";
 
     }catch(error){
 
         console.log(error);
 
-        statusText.innerText =
-            "❌ Không xử lý được link";
+        statusText.innerText = "❌ Không xử lý được link";
 
         copyBtn.disabled = true;
-        copyBtn.innerText =
-            "Xử lý thất bại";
+        copyBtn.innerText = "Xử lý thất bại";
+
     }
 
     isLoading = false;
 
     generateBtn.disabled = false;
-    generateBtn.innerText =
-        "Tạo Link Ngay";
+    generateBtn.innerText = "Tạo Link Ngay";
 }
 
 function copyToClipboard(){
 
-    const text =
-        document
-        .getElementById("outputLink")
-        .value;
+    const text = document.getElementById("outputLink").value;
 
     if(!text){
-        alert(
-            "Link vẫn đang xử lý, vui lòng chờ..."
-        );
+        alert("Chưa có dữ liệu, vui lòng đợi!");
         return;
     }
 
