@@ -202,36 +202,37 @@ async function generateAffLink(){
 
     try{
 
-        const res=await fetch(
-            "https://customlink22.onedayofu01.workers.dev/",
-            {
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    url:inputLink
-                })
-            }
-        );
+       const res = await fetch(
+    "https://customlink22.onedayofu01.workers.dev/",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            url: inputLink,
+            sub_id: "caback"
+        })
+    }
+);
 
-        const data=await res.json();
+const data = await res.json();
 
-        if(!data.success){
-            throw new Error(data.error);
-        }
+if (!data.success) {
+    throw new Error(data.error);
+}
 
-        output.value=data.data.templates.main25;
+// Nội dung để copy
+output.value = data.data.copyText;
 
-        buyLink=data.data.templates.main25;
+// Link nút Mua ngay
+buyBtn.href = data.data.buyLink;
+buyBtn.style.display = "block";
 
-        buyBtn.href=buyLink;
-        buyBtn.style.display="block";
+statusText.innerText = "✔ Link đã sẵn sàng";
 
-        statusText.innerText="✔ Link đã sẵn sàng";
-
-        copyBtn.disabled=false;
-        copyBtn.innerText="📋 Sao chép link lấy mã 22%";
+copyBtn.disabled = false;
+copyBtn.innerText = "📋 Sao chép link lấy mã 22%";
 
     }catch(err){
 
