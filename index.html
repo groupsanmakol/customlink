@@ -97,6 +97,61 @@ button:disabled{
     font-weight:bold;
     color:#333;
     margin-bottom:12px;
+    /* ===== Product Card ===== */
+
+.product-card{
+    display:none;
+    margin-bottom:15px;
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:10px;
+    padding:12px;
+    text-align:left;
+}
+
+.product-card-content{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+}
+
+.product-image{
+    width:90px;
+    height:90px;
+    border-radius:8px;
+    object-fit:cover;
+    border:1px solid #ddd;
+    flex-shrink:0;
+}
+
+.product-detail{
+    flex:1;
+}
+
+.product-name{
+    font-size:15px;
+    font-weight:bold;
+    color:#333;
+    line-height:1.5;
+    margin-bottom:8px;
+
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.product-commission{
+    color:#ee4d2d;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.status-text{
+    font-weight:bold;
+    color:#333;
+    margin-bottom:12px;
+}
 }
 </style>
 </head>
@@ -127,6 +182,38 @@ Tạo Link Ngay
 <div
 class="result-box"
 id="resultBox">
+
+<div
+class="product-card"
+id="productCard">
+
+    <div class="product-card-content">
+
+        <img
+            id="productImage"
+            class="product-image"
+            src="https://placehold.co/90x90?text=Shopee"
+        >
+
+        <div class="product-detail">
+
+            <div
+                class="product-name"
+                id="productName">
+                Đang tải...
+            </div>
+
+            <div
+                class="product-commission"
+                id="productCommission">
+                💰 Commission: --
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <p
 class="status-text"
@@ -192,14 +279,24 @@ if(subId===""){
     const output=document.getElementById("outputLink");
     const copyBtn=document.getElementById("copyBtn");
     const buyBtn=document.getElementById("buyBtn");
+    const productCard=document.getElementById("productCard");
+const productImage=document.getElementById("productImage");
+const productName=document.getElementById("productName");
+const productCommission=document.getElementById("productCommission");
 
     btn.disabled=true;
     btn.innerText="Đang xử lý...";
 
     resultBox.style.display="block";
+productCard.style.display="none";
 
+productImage.src="https://placehold.co/90x90?text=Shopee";
+
+productName.innerText="Đang tải thông tin sản phẩm...";
+
+productCommission.innerText="💰 Commission: --";
     statusText.innerText="⏳ Đang xử lý link...";
-
+statusText.style.display="block";
     copyBtn.disabled=true;
     buyBtn.style.display="none";
 
@@ -220,7 +317,24 @@ if(subId===""){
 );
 
 const data = await res.json();
+// Hiển thị thông tin sản phẩm nếu Worker trả về
 
+if(data.data.image){
+
+    productCard.style.display="block";
+
+    productImage.src=data.data.image;
+
+    productName.innerText=data.data.name;
+
+    productCommission.innerText=
+        "💰 Commission: " + data.data.commission;
+
+}else{
+
+    productCard.style.display="none";
+
+}
 if (!data.success) {
     throw new Error(data.error);
 }
@@ -232,7 +346,8 @@ output.value = data.data.copyText;
 buyBtn.href = data.data.buyLink;
 buyBtn.style.display = "block";
 
-statusText.innerText = "✔ Link đã sẵn sàng";
+statusText.innerText="";
+statusText.style.display="none";
 
 copyBtn.disabled = false;
 copyBtn.innerText = "📋 Sao chép";
@@ -242,6 +357,9 @@ copyBtn.innerText = "📋 Sao chép";
         console.log(err);
 
         statusText.innerText="❌ Không xử lý được link";
+        statusText.style.display="block";
+
+productCard.style.display="none";
 
     }
 
