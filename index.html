@@ -98,7 +98,7 @@ button:disabled{
     color:#333;
     margin-bottom:12px;
     /* ===== Product Card ===== */
-
+}
 .product-card{
     display:none;
     margin-bottom:15px;
@@ -206,7 +206,7 @@ id="productCard">
             <div
                 class="product-commission"
                 id="productCommission">
-                💰 Commission: --
+                💰 Hoàn tiền dự kiến: --
             </div>
 
         </div>
@@ -323,12 +323,15 @@ if(data.data.image){
 
     productCard.style.display="block";
 
-    productImage.src=data.data.image;
-
+productImage.src =
+data.data.image ||
+"https://placehold.co/90x90?text=Shopee";
     productName.innerText=data.data.name;
 
-    productCommission.innerText=
-        "💰 Commission: " + data.data.commission;
+    productCommission.innerText =
+"💰 Hoàn tiền dự kiến: " +
+Number(data.data.commission)
+.toLocaleString("vi-VN") + "đ";
 
 }else{
 
