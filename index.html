@@ -112,7 +112,12 @@ type="text"
 id="shopeeLink"
 placeholder="Nhập link sản phẩm Shopee..."
 >
-
+<input
+    type="text"
+    id="subId"
+    placeholder="Nhập số Zalo..."
+    style="margin-top:8px;"
+>
 <button
 id="generateBtn"
 onclick="generateAffLink()">
@@ -164,6 +169,11 @@ async function generateAffLink(){
     if(isLoading) return;
 
     let inputLink=document.getElementById("shopeeLink").value.trim();
+    let subId=document.getElementById("subId").value.trim();
+
+if(subId===""){
+    subId="caback";      // Sub ID mặc định
+}
 
     if(!inputLink){
         alert("Vui lòng nhập link Shopee");
@@ -203,9 +213,9 @@ async function generateAffLink(){
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            url: inputLink,
-            sub_id: "caback"
-        })
+    url: inputLink,
+    sub_id: subId
+})
     }
 );
 
